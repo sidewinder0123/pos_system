@@ -1,11 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
+import Genders from "./pages/gender/Genders";
+import EditGender from "./pages/gender/EditGender";
+import DeleteGender from "./pages/gender/DeleteGender";
 import Users from "./pages/user/Users";
 import Login from "./pages/login/Login";
-import ProtectedRoute from "./components/ProtectedRoutes";
-import DeleteRole from "./pages/role/DeleteRole";
-import EditRole from "./pages/role/EditRole";
-import Roles from "./pages/role/Roles";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -13,26 +12,26 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/roles",
+    path: "/genders",
     element: (
       <ProtectedRoute>
-        <Roles />
+        <Genders />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/role/edit/:role_id",
+    path: "/gender/edit/:gender_id",
     element: (
       <ProtectedRoute>
-        <EditRole />
+        <EditGender />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/role/delete/:role_id",
+    path: "/gender/delete/:gender_id",
     element: (
       <ProtectedRoute>
-        <DeleteRole />
+        <DeleteGender />
       </ProtectedRoute>
     ),
   },

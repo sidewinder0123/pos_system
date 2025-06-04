@@ -34,19 +34,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    try {
-      // Clear token or session data
-      localStorage.removeItem("authToken");
-      sessionStorage.clear();
+    await axios.post("http://127.0.0.1:8000/api/logout");
+    setToken(null);
+    setUser(null);
 
-      // Optionally, call a backend logout endpoint
-      // await axios.post("/api/logout");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
-      console.log("User logged out successfully");
-    } catch (error) {
-      console.error("Error during logout:", error);
-      throw error; // Rethrow error for further handling
-    }
+    delete axios.defaults.headers.common["Authorization"];
   };
 
   const isLoggedIn = !!token;

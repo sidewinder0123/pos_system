@@ -12,8 +12,8 @@ const Navbar = () => {
 
   const menuItems = [
     {
-      route: "/roles",
-      title: "Roles",
+      route: "/",
+      title: "Genders",
     },
     {
       route: "/users",
@@ -23,16 +23,14 @@ const Navbar = () => {
 
   const handleLogout = (e: FormEvent) => {
     e.preventDefault();
-    console.log("Logout button clicked");
+
     setLoadingLogout(true);
 
     logout()
       .then(() => {
-        console.log("Logout successful");
         navigate("/");
       })
       .catch((error) => {
-        console.error("Logout error:", error);
         ErrorHandler(error, null);
       })
       .finally(() => {
@@ -44,15 +42,15 @@ const Navbar = () => {
     const user = localStorage.getItem("user");
     const parsedUser = user ? JSON.parse(user) : null;
 
-    if (!parsedUser) return ""; // Prevent error if user is null
+    let fullName = "";
 
-    const { first_name, middle_name, last_name } = parsedUser;
-
-    if (middle_name) {
-      return `${last_name}, ${first_name} ${middle_name[0]}.`;
+    if (parsedUser.middle_name) {
+      fullName = `${parsedUser.last_name}, ${parsedUser.first_name} ${parsedUser.middle_name[0]}.`;
     } else {
-      return `${last_name}, ${first_name}`;
+      fullName = `${parsedUser.last_name}, ${parsedUser.first_name}`;
     }
+
+    return fullName;
   };
 
   return (
@@ -60,7 +58,7 @@ const Navbar = () => {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <a className="navbar-brand" href="#">
-            POS
+            RnL Demo
           </a>
           <button
             className="navbar-toggler"

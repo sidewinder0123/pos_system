@@ -56,6 +56,11 @@ const UsersTable = ({
     } else {
       fullName = `${user.last_name}, ${user.first_name}`;
     }
+
+    if (user.suffix_name) {
+      fullName += ` ${user.suffix_name}`;
+    }
+
     return fullName;
   };
 
@@ -70,8 +75,10 @@ const UsersTable = ({
           <tr>
             <th>No.</th>
             <th>Full Name</th>
-            <th>Role</th>
+            <th>Gender</th>
             <th>Birthdate</th>
+            <th>Address</th>
+            <th>Contact Number</th>
             <th>Email</th>
             <th>Action</th>
           </tr>
@@ -88,7 +95,10 @@ const UsersTable = ({
               <tr className="align-middle" key={index}>
                 <td>{index + 1}</td>
                 <td>{handleUsersFullName(user)}</td>
-                <td>{user.role.role}</td>
+                <td>{user.gender.gender}</td>
+                <td>{user.birth_date}</td>
+                <td>{user.address}</td>
+                <td>{user.contact_number}</td>
                 <td>{user.email}</td>
                 <td>
                   <div className="btn-group">

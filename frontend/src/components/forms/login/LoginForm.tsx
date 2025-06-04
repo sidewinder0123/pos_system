@@ -40,7 +40,7 @@ const LoginForm = () => {
 
     login(state.email, state.password)
       .then(() => {
-        navigate("/roles");
+        navigate("/genders");
       })
       .catch((error) => {
         if (error.response.status === 422) {

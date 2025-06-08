@@ -22,9 +22,6 @@ class RoleController extends Controller
 }
 
     public function loadRoles()
-
-
-
     {
         $roles = Role::where('tbl_roles.is_deleted', false)->get();
 

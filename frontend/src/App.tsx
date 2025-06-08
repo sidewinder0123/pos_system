@@ -1,10 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Genders from "./pages/gender/Genders";
-import EditGender from "./pages/gender/EditGender";
-import DeleteGender from "./pages/gender/DeleteGender";
+import Roles from "./pages/role/Roles";
+import EditRole from "./pages/role/EditRole";
+import DeleteRole from "./pages/role/DeleteRole";
+import Supplier from "./pages/supplier/Suppliers";
 import Users from "./pages/user/Users";
 import Login from "./pages/login/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const router = createBrowserRouter([
   {
@@ -12,26 +14,26 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/genders",
+    path: "/roles",
     element: (
       <ProtectedRoute>
-        <Genders />
+        <Roles />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/gender/edit/:gender_id",
+    path: "/role/edit/:role_id",
     element: (
       <ProtectedRoute>
-        <EditGender />
+        <EditRole />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/gender/delete/:gender_id",
+    path: "/role/delete/:role_id",
     element: (
       <ProtectedRoute>
-        <DeleteGender />
+        <DeleteRole />
       </ProtectedRoute>
     ),
   },
@@ -40,6 +42,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Users />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/suppliers",
+    element: (
+      <ProtectedRoute>
+        <Supplier />
       </ProtectedRoute>
     ),
   },

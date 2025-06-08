@@ -1,37 +1,37 @@
 import { useEffect, useState } from "react";
-import { Users } from "../../../interfaces/Users";
-import UserService from "../../../services/UserService";
+import { Suppliers } from "../../../interfaces/Suppliers";
+import SupplierService from "../../../services/SupplierService";
 import ErrorHandler from "../../../handler/ErrorHandler";
 import Spinner from "../../Spinner";
-import { FaEdit, FaTrashAlt } from "react-icons/fa"; // FontAwesome React icons
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
-interface UsersTableProps {
-  refreshUsers: boolean;
-  onEditUser: (user: Users) => void;
-  onDeleteUser: (user: Users) => void;
+interface SupplierTablesProps {
+  refreshSuppliers: boolean;
+  onEditSupplier: (supplier: Suppliers) => void;
+  onDeleteSupplier: (supplier: Suppliers) => void;
 }
 
-const UsersTable = ({
-  refreshUsers,
-  onEditUser,
-  onDeleteUser,
-}: UsersTableProps) => {
+const SupplierTables = ({
+  refreshSuppliers,
+  onEditSupplier,
+  onDeleteSupplier,
+}: SupplierTablesProps) => {
   const [state, setState] = useState({
-    loadingUsers: true,
-    users: [] as Users[],
+    loadingSuppliers: true,
+    suppliers: [] as Suppliers[],
   });
 
-  const handleLoadUsers = () => {
-    UserService.loadUsers()
+  const handleLoadSuppliers = () => {
+    SupplierService.loadSuppliers()
       .then((res) => {
         if (res.status === 200) {
           setState((prevState) => ({
             ...prevState,
-            users: res.data.users,
+            suppliers: res.data.suppliers,
           }));
         } else {
           console.error(
-            "Unexpected status error while loading users: ",
+            "Unexpected status error while loading suppliers: ",
             res.status
           );
         }
@@ -42,23 +42,14 @@ const UsersTable = ({
       .finally(() => {
         setState((prevState) => ({
           ...prevState,
-          loadingUsers: false,
+          loadingSuppliers: false,
         }));
       });
   };
 
-  const handleUsersFullName = (user: Users) => {
-    if (user.middle_name) {
-      return `${user.last_name}, ${user.first_name} ${user.middle_name.charAt(
-        0
-      )}.`;
-    }
-    return `${user.last_name}, ${user.first_name}`;
-  };
-
   useEffect(() => {
-    handleLoadUsers();
-  }, [refreshUsers]);
+    handleLoadSuppliers();
+  }, [refreshSuppliers]);
 
   return (
     <div className="table-responsive shadow-sm rounded">
@@ -68,51 +59,54 @@ const UsersTable = ({
             <th scope="col" style={{ width: "5%" }}>
               #
             </th>
-            <th scope="col">Full Name</th>
-            <th scope="col" style={{ width: "20%" }}>
-              Role
-            </th>
-            <th scope="col" style={{ width: "25%" }}>
-              Email
-            </th>
+            <th scope="col">Supplier Name</th>
+            <th scope="col">Contact Person</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Address</th>
             <th scope="col" style={{ width: "15%" }} className="text-center">
               Actions
             </th>
           </tr>
         </thead>
         <tbody>
-          {state.loadingUsers ? (
+          {state.loadingSuppliers ? (
             <tr>
-              <td colSpan={5} className="text-center py-5">
+              <td colSpan={7} className="text-center py-5">
                 <Spinner />
               </td>
             </tr>
-          ) : state.users.length > 0 ? (
-            state.users.map((user, index) => (
-              <tr key={user.id ?? index} className="cursor-pointer">
+          ) : state.suppliers.length > 0 ? (
+            state.suppliers.map((supplier, index) => (
+              <tr
+                key={supplier.supplier_id ?? index}
+                className="cursor-pointer"
+              >
                 <td>{index + 1}</td>
-                <td>{handleUsersFullName(user)}</td>
-                <td>{user.role.role}</td>
-                <td>{user.email}</td>
+                <td>{supplier.supplier_name}</td>
+                <td>{supplier.contact_person}</td>
+                <td>{supplier.email}</td>
+                <td>{supplier.phone}</td>
+                <td>{supplier.address}</td>
                 <td className="text-center">
                   <div
                     className="btn-group"
                     role="group"
-                    aria-label="User actions"
+                    aria-label="Supplier actions"
                   >
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-primary"
-                      title="Edit User"
-                      onClick={() => onEditUser(user)}
+                      title="Edit Supplier"
+                      onClick={() => onEditSupplier(supplier)}
                     >
                       <FaEdit />
                     </button>
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-danger"
-                      title="Delete User"
-                      onClick={() => onDeleteUser(user)}
+                      title="Delete Supplier"
+                      onClick={() => onDeleteSupplier(supplier)}
                     >
                       <FaTrashAlt />
                     </button>
@@ -123,10 +117,10 @@ const UsersTable = ({
           ) : (
             <tr>
               <td
-                colSpan={5}
+                colSpan={7}
                 className="text-center py-4 text-muted fst-italic"
               >
-                No Users Found
+                No Suppliers Found
               </td>
             </tr>
           )}
@@ -136,4 +130,4 @@ const UsersTable = ({
   );
 };
 
-export default UsersTable;
+export default SupplierTables;

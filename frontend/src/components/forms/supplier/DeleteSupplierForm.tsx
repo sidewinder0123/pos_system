@@ -1,38 +1,38 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
-import UserService from "../../../services/UserService";
+import SupplierService from "../../../services/SupplierService";
 import ErrorHandler from "../../../handler/ErrorHandler";
-import { Users } from "../../../interfaces/Users";
+import { Suppliers } from "../../../interfaces/Suppliers";
 
-interface DeleteUserFormProps {
-  user: Users | null;
+interface DeleteSupplierFormProps {
+  supplier: Suppliers | null;
   setSubmitForm: React.MutableRefObject<(() => void) | null>;
   setLoadingDestroy: (loading: boolean) => void;
-  onDeletedUser: (message: string) => void;
+  onDeletedSupplier: (message: string) => void;
 }
 
-const DeleteUserForm = ({
-  user,
+const DeleteSupplierForm = ({
+  supplier,
   setSubmitForm,
   setLoadingDestroy,
-  onDeletedUser,
-}: DeleteUserFormProps) => {
+  onDeletedSupplier,
+}: DeleteSupplierFormProps) => {
   const [state, setState] = useState({
-    user_id: 0,
-    full_name: "",
+    supplier_id: 0,
+    supplier_name: "",
   });
 
-  const handleDestroyUser = (e: FormEvent) => {
+  const handleDestroySupplier = (e: FormEvent) => {
     e.preventDefault();
 
     setLoadingDestroy(true);
 
-    UserService.destroyUser(state.user_id)
+    SupplierService.destroySupplier(state.supplier_id)
       .then((res) => {
         if (res.status === 200) {
-          onDeletedUser(res.data.message);
+          onDeletedSupplier(res.data.message);
         } else {
           console.error(
-            "Unexpected status error while destroying user: ",
+            "Unexpected status error while destroying supplier: ",
             res.status
           );
         }
@@ -45,40 +45,20 @@ const DeleteUserForm = ({
       });
   };
 
-  const handleUserFullName = (
-    firstName: string,
-    middleName: string,
-    lastName: string
-  ) => {
-    let fullName = "";
-
-    if (middleName) {
-      fullName = `${lastName}, ${firstName} ${middleName.charAt(0)}.`;
-    } else {
-      fullName = `${lastName}, ${firstName}`;
-    }
-
-    return fullName;
-  };
-
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (user) {
+    if (supplier) {
       setState((prevState) => ({
         ...prevState,
-        user_id: user.user_id,
-        full_name: handleUserFullName(
-          user.first_name,
-          user.middle_name,
-          user.last_name
-        ),
+        supplier_id: supplier.supplier_id,
+        supplier_name: supplier.supplier_name,
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        user_id: 0,
-        full_name: "",
+        supplier_id: 0,
+        supplier_name: "",
       }));
     }
 
@@ -87,22 +67,22 @@ const DeleteUserForm = ({
         formRef.current.requestSubmit();
       }
     };
-  }, [user, setSubmitForm]);
+  }, [supplier, setSubmitForm]);
 
   return (
     <>
-      <form ref={formRef} onSubmit={handleDestroyUser}>
+      <form ref={formRef} onSubmit={handleDestroySupplier}>
         <div className="row">
           <div className="d-flex justify-content-center">
             <div className="col-md-6">
               <div className="mb-3">
-                <label htmlFor="full_name">Full Name</label>
+                <label htmlFor="supplier_name">Supplier Name</label>
                 <input
                   type="text"
                   className="form-control"
-                  name="full_name"
-                  id="full_name"
-                  value={state.full_name}
+                  name="supplier_name"
+                  id="supplier_name"
+                  value={state.supplier_name}
                   readOnly
                 />
               </div>
@@ -114,4 +94,4 @@ const DeleteUserForm = ({
   );
 };
 
-export default DeleteUserForm;
+export default DeleteSupplierForm;

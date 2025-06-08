@@ -9,16 +9,6 @@ use App\Models\Supplier;
 
 class SupplierController extends Controller
 {
-
-    public function loadSuppliers()
-    {
-        $suppliers = Supplier::where('is_deleted', false)->get();
-
-        return response()->json([
-            'suppliers' => $suppliers
-        ], 200);
-    }
-
     public function storeSupplier(Request $request)
     {
         $validated = $request->validate([
@@ -31,30 +21,34 @@ class SupplierController extends Controller
 
         Supplier::create($validated);
 
-
         return response()->json([
             'message' => 'Supplier successfully added.'
         ], 201);
     }
 
     public function updateSupplier(Request $request, Supplier $supplier)
-{
-    $validated = $request->validate([
-        'supplier_name' => ['required', 'string', 'max:255'],
-        'contact_person' => ['nullable', 'string', 'max:255'],
-        'email' => ['required', 'email', 'max:255', Rule::unique('tbl_suppliers', 'email')->ignore($supplier->supplier_id, 'supplier_id')],
-        'phone' => ['nullable', 'string', 'max:15'],
-        'address' => ['nullable', 'string']
-    ]);
+    {
+        $validated = $request->validate([
+            'supplier_name' => ['required', 'string', 'max:255'],
+            'contact_person' => ['nullable', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('tbl_suppliers', 'email')->ignore($supplier->supplier_id, 'supplier_id')
+            ],
+            'phone' => ['nullable', 'string', 'max:15'],
+            'address' => ['nullable', 'string']
+        ]);
 
-    $supplier->update($validated);
+        $supplier->update($validated);
 
-    return response()->json([
-        'message' => 'Supplier successfully updated.'
-    ], 200);
-}
+        return response()->json([
+            'message' => 'Supplier successfully updated.'
+        ], 200);
+    }
 
-    public function destroyProduct(Supplier $supplier)
+    public function destroySupplier(Supplier $supplier)
     {
         $supplier->update(['is_deleted' => true]);
 
@@ -63,6 +57,13 @@ class SupplierController extends Controller
         ], 200);
     }
 
+    // ✅ Load suppliers method
+    public function loadSuppliers()
+    {
+        $suppliers = Supplier::where('is_deleted', false)->get();
 
-
+        return response()->json([
+            'suppliers' => $suppliers
+        ], 200);
+    }
 }

@@ -61,7 +61,8 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::controller(SupplierController::class)->group(function () {
             Route::post('/storeSupplier', 'storeSupplier');
             Route::put('/updateSupplier/{supplier}', 'updateSupplier');
-
+            Route::get('/loadSuppliers', 'loadSuppliers');
+            Route::put('/destroySupplier/{supplier}', 'destroySupplier');
         });
 
         Route::controller(CategoryController::class)->group(function () {

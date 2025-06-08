@@ -1,24 +1,25 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { Roles } from "../../../interfaces/Roles";
 import RoleService from "../../../services/RoleService";
 import ErrorHandler from "../../../handler/ErrorHandler";
-import Spinner from "../../Spinner";
-import { RoleFieldErrors } from "../../../interfaces/RoleFieldErrors";
-import SpinnerSmall from "../../SpinnerSmall";
 
 interface EditRoleFormProps {
-  onRoleUpdate: (message: string) => void;
+  role: Roles | null;
+  setSubmitForm: React.MutableRefObject<(() => void) | null>;
+  setLoadingUpdate: (loading: boolean) => void;
+  onRoleUpdated: (message: string) => void;
 }
 
-const EditRoleForm = ({ onRoleUpdate }: EditRoleFormProps) => {
-  const { role_id } = useParams();
-
+const EditRoleForm = ({
+  role,
+  setSubmitForm,
+  setLoadingUpdate,
+  onRoleUpdated,
+}: EditRoleFormProps) => {
   const [state, setState] = useState({
-    loadingGet: true,
-    loadingUpdate: false,
     role_id: 0,
     role: "",
-    errors: {} as RoleFieldErrors,
+    errors: {} as { role?: string[] },
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -29,64 +30,21 @@ const EditRoleForm = ({ onRoleUpdate }: EditRoleFormProps) => {
     }));
   };
 
-  const handleGetRole = (roleId: number) => {
-    setState((prevState) => ({
-      ...prevState,
-      loadingGet: true,
-    }));
-
-    RoleService.getRole(roleId)
-      .then((res) => {
-        if (res.status === 200) {
-          setState((prevState) => ({
-            ...prevState,
-            role_id: res.data.role.role_id,
-            role: res.data.role.role,
-          }));
-        } else {
-          console.error(
-            "Unexpected status error while getting role: ",
-            res.status
-          );
-        }
-      })
-      .catch((error) => {
-        ErrorHandler(error, null);
-      })
-      .finally(() => {
-        setState((prevState) => ({
-          ...prevState,
-          loadingGet: false,
-        }));
-      });
-  };
-
   const handleUpdateRole = (e: FormEvent) => {
     e.preventDefault();
 
-    setState((prevState) => ({
-      ...prevState,
-      loadingUpdate: true,
-    }));
+    setLoadingUpdate(true);
 
-    RoleService.updateRole(state.role_id, state)
+    RoleService.updateRole(state.role_id, { role: state.role })
       .then((res) => {
         if (res.status === 200) {
-          setState((prevState) => ({
-            ...prevState,
-            errors: {} as RoleFieldErrors,
-          }));
-
-          onRoleUpdate(res.data.message);
+          onRoleUpdated(res.data.message);
         } else {
-          console.error(
-            "Unexpected status error while updating role: ",
-            res.status
-          );
+          console.error("Unexpected status while updating role:", res.status);
         }
       })
       .catch((error) => {
-        if (error.response.status === 422) {
+        if (error.response?.status === 422) {
           setState((prevState) => ({
             ...prevState,
             errors: error.response.data.errors,
@@ -96,69 +54,51 @@ const EditRoleForm = ({ onRoleUpdate }: EditRoleFormProps) => {
         }
       })
       .finally(() => {
-        setState((prevState) => ({
-          ...prevState,
-          loadingUpdate: false,
-        }));
+        setLoadingUpdate(false);
       });
   };
 
+  const formRef = useRef<HTMLFormElement>(null);
+
   useEffect(() => {
-    if (role_id) {
-      const parsedRoleId = parseInt(role_id);
-      handleGetRole(parsedRoleId);
+    if (role) {
+      setState({
+        role_id: role.role_id,
+        role: role.role,
+        errors: {},
+      });
     } else {
-      console.error("Invalid role_id: ", role_id);
+      setState({
+        role_id: 0,
+        role: "",
+        errors: {},
+      });
     }
-  }, [role_id]);
+
+    setSubmitForm.current = () => {
+      formRef.current?.requestSubmit();
+    };
+  }, [role, setSubmitForm]);
 
   return (
-    <>
-      {state.loadingGet ? (
-        <div className="text-center mt-5">
-          <Spinner />
-        </div>
-      ) : (
-        <form onSubmit={handleUpdateRole}>
-          <div className="form-group">
-            <div className="mb-3">
-              <label htmlFor="role">Role</label>
-              <input
-                type="text"
-                className={`form-control ${
-                  state.errors.role ? "is-invalid" : ""
-                }`}
-                name="role"
-                id="role"
-                value={state.role}
-                onChange={handleInputChange}
-              />
-              {state.errors.role && (
-                <p className="text-danger">{state.errors.role[0]}</p>
-              )}
-            </div>
-            <div className="d-flex justify-content-end">
-              <Link to={"/roles"} className="btn btn-secondary me-1">
-                Back
-              </Link>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={state.loadingUpdate}
-              >
-                {state.loadingUpdate ? (
-                  <>
-                    <SpinnerSmall /> Updating...
-                  </>
-                ) : (
-                  "Update"
-                )}
-              </button>
-            </div>
-          </div>
-        </form>
-      )}
-    </>
+    <form ref={formRef} onSubmit={handleUpdateRole}>
+      <div className="mb-3">
+        <label htmlFor="role" className="form-label">
+          Role Name
+        </label>
+        <input
+          type="text"
+          id="role"
+          name="role"
+          className={`form-control ${state.errors.role ? "is-invalid" : ""}`}
+          value={state.role}
+          onChange={handleInputChange}
+        />
+        {state.errors.role && (
+          <div className="invalid-feedback">{state.errors.role[0]}</div>
+        )}
+      </div>
+    </form>
   );
 };
 

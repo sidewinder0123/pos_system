@@ -60,10 +60,7 @@ class SupplierController extends Controller
     // ✅ Load suppliers method
     public function loadSuppliers()
     {
-        $suppliers = Supplier::where('is_deleted', false)->get();
-
-        return response()->json([
-            'suppliers' => $suppliers
-        ], 200);
+        $suppliers = Supplier::all();
+        return response()->json(['suppliers' => $suppliers], 200);
     }
 }
